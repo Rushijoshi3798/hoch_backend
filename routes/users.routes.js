@@ -5,37 +5,43 @@ const { UserModel } = require("../models/users.model");
 const userRouter = express.Router();
 
 // Get Route
+
+userRouter.get("/" , async (req, res) => {
+  try {
+    const users = await UserModel.find();
+    res.status(200).send(users);
+  } catch (error) {
+    res.status(400).send({msg: "Cannot able to get Data"});
+    
+  }
+})
 userRouter.get("/:userID", async (req, res) => {
-  //const { name } = req.body;
+  const { name } = req.body;
   const userID = req.params.userID;
 
-  // if (name) {
-  //   try {
-  //     const users = await UserModel.find({
-  //       Fname: name,
-  //     });
-  //     res.status(200).send(users);
+  if (name) {
+    try {
+      const users = await UserModel.find({
+        Fname: name,
+      });
+      res.status(200).send(users);
 
-  //     if (!users.length) {
-  //       const user = await UserModel.find({
-  //         Lname: name,
-  //       });
-  //       res.status(200).send(user);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     res.status(404).send({ msg: "Not Able to Get UserData from Server" });
-  //   }
-  // } else
-   if ( userID) {
+      if (!users.length) {
+        const user = await UserModel.find({
+          Lname: name,
+        });
+        res.status(200).send(user);
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(404).send({ msg: "Not Able to Get UserData from Server" });
+    }
+  } else if (userID) {
     const users = await UserModel.findOne({_id: userID});
     res.status(200).send(users);
       
-  }else {
-  
-    const users = await UserModel.find();
-    res.status(200).send(users);
-  
+  } else {
+    res.status(400).send({msg: "Cannot able to get Data!!"});
   }
 });
 
