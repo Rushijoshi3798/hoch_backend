@@ -5,8 +5,9 @@ const { UserModel } = require("../models/users.model");
 const userRouter = express.Router();
 
 // Get Route
-userRouter.get("/", async (req, res) => {
+userRouter.get("/:userID", async (req, res) => {
   const { name } = req.body;
+  const userID = req.params.userID;
 
   if (name) {
     try {
@@ -27,8 +28,14 @@ userRouter.get("/", async (req, res) => {
     }
   } else if (!name) {
     try {
-      const users = await UserModel.find();
+      if(userID){
+        const users = await UserModel.findOne({_id: userID});
+        res.status(200).send(users);
+      }else {
+        const users = await UserModel.find();
       res.status(200).send(users);
+      }
+      
     } catch (error) {
       console.log(error);
       res.status(404).send({ msg: "Not Able to Get All UserData from Server" });
