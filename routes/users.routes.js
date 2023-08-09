@@ -26,7 +26,7 @@ userRouter.get("/:userID", async (req, res) => {
       console.log(error);
       res.status(404).send({ msg: "Not Able to Get UserData from Server" });
     }
-  } else if (!name && userID) {
+  } else if (!name || userID) {
     const users = await UserModel.findOne({_id: userID});
     res.status(200).send(users);
       
