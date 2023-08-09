@@ -69,11 +69,12 @@ userRouter.patch("update/:userID" , async (req, res) => {
 // Delete Route
 userRouter.patch("delete/:userID" , async (req, res) => {
     const userID = req.params.userID;
+    console.log(userID, typeof(userID));
 
     const user = await UserModel.findOne({ _id: userID});
 
     if(user){
-        await UserModel.findByIdAndDelete({ _id: userID});
+        await UserModel.findByIdAndDelete(userID, (err) => console.log(err));
         res.status(200).send({msg: "User Details has been successfully Deleted!"})
     }else {
         res.status(400).send({msg: "Something went wrong, Details not Delteted"})
