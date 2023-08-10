@@ -84,7 +84,7 @@ userRouter.patch("/update/:userID", async (req, res) => {
 });
 
 // Delete Route
-userRouter.patch("delete/:userID", async (req, res) => {
+userRouter.delete("delete/:userID", async (req, res) => {
   const userID = req.params.userID;
   console.log(userID, typeof userID);
 
