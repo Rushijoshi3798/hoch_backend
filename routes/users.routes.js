@@ -84,14 +84,14 @@ userRouter.patch("/update/:userID", async (req, res) => {
 });
 
 // Delete Route
-userRouter.delete("delete/:userID", async (req, res) => {
+userRouter.delete("/delete/:userID", async (req, res) => {
   const userID = req.params.userID;
   console.log(userID, typeof userID);
 
   const user = await UserModel.findOne({ _id: userID });
 
   if (user) {
-    await UserModel.findByIdAndDelete(userID, (err) => console.log(err));
+    await UserModel.findByIdAndDelete({_id: userID});
     res
       .status(200)
       .send({ msg: "User Details has been successfully Deleted!" });
