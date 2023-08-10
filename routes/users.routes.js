@@ -6,28 +6,28 @@ const userRouter = express.Router();
 
 // Get Route
 
-userRouter.get("/", async (req, res) => {
-  try {
-    const users = await UserModel.find();
-    res.status(200).send(users);
-  } catch (error) {
-    res.status(400).send({ msg: "Cannot able to get Data" });
-  }
-});
-userRouter.get("/:userID", async (req, res) => {
-  const { name } = req.body;
-  const userID = req.params.userID;
+// userRouter.get("/", async (req, res) => {
+//   try {
+//     const users = await UserModel.find();
+//     res.status(200).send(users);
+//   } catch (error) {
+//     res.status(400).send({ msg: "Cannot able to get Data" });
+//   }
+// });
 
-  if (name) {
+userRouter.get("/", async (req, res) => {
+  const { q } = req.query;
+
+  if (q) {
     try {
       const users = await UserModel.find({
-        Fname: name,
+        Fname: { $regex: q, $options: "i" },
       });
       res.status(200).send(users);
 
       if (!users.length) {
         const user = await UserModel.find({
-          Lname: name,
+          Lname: { $regex: q, $options: "i" },
         });
         res.status(200).send(user);
       }
@@ -35,11 +35,26 @@ userRouter.get("/:userID", async (req, res) => {
       console.log(error);
       res.status(404).send({ msg: "Not Able to Get UserData from Server" });
     }
-  } else if (userID) {
-    const users = await UserModel.findOne({ _id: userID });
-    res.status(200).send(users);
   } else {
-    res.status(400).send({ msg: "Cannot able to get Data!!" });
+    try {
+      const users = await UserModel.find();
+      res.status(200).send(users);
+    } catch (error) {
+      console.log(error);
+      res.status(404).send({ msg: "Not Able to Get UserData from Server" });
+    }
+  }
+});
+
+userRouter.get("/:userID", async (req, res) => {
+  const userID = req.params.userID;
+
+  try {
+    const user = await UserModel.findOne({ _id: userID });
+    res.status(200).send(user);
+  } catch (error) {
+    console.log(error);
+    res.status(404).send({ msg: "Not Able to Get UserData from Server" });
   }
 });
 
@@ -91,7 +106,7 @@ userRouter.delete("/delete/:userID", async (req, res) => {
   const user = await UserModel.findOne({ _id: userID });
 
   if (user) {
-    await UserModel.findByIdAndDelete({_id: userID});
+    await UserModel.findByIdAndDelete({ _id: userID });
     res
       .status(200)
       .send({ msg: "User Details has been successfully Deleted!" });
