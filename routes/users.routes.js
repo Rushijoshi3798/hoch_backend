@@ -6,15 +6,14 @@ const userRouter = express.Router();
 
 // Get Route
 
-userRouter.get("/" , async (req, res) => {
+userRouter.get("/", async (req, res) => {
   try {
     const users = await UserModel.find();
     res.status(200).send(users);
   } catch (error) {
-    res.status(400).send({msg: "Cannot able to get Data"});
-    
+    res.status(400).send({ msg: "Cannot able to get Data" });
   }
-})
+});
 userRouter.get("/:userID", async (req, res) => {
   const { name } = req.body;
   const userID = req.params.userID;
@@ -37,11 +36,10 @@ userRouter.get("/:userID", async (req, res) => {
       res.status(404).send({ msg: "Not Able to Get UserData from Server" });
     }
   } else if (userID) {
-    const users = await UserModel.findOne({_id: userID});
+    const users = await UserModel.findOne({ _id: userID });
     res.status(200).send(users);
-      
   } else {
-    res.status(400).send({msg: "Cannot able to get Data!!"});
+    res.status(400).send({ msg: "Cannot able to get Data!!" });
   }
 });
 
@@ -60,36 +58,47 @@ userRouter.post("/add", async (req, res) => {
 });
 
 // Update Route
-userRouter.patch("update/:userID" , async (req, res) => {
+userRouter.patch("/update/:userID", async (req, res) => {
+  try {
     const payload = req.body;
     const userID = req.params.userID;
+    console.log(userID);
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      { _id: userID },
+      payload,
+      {
+        new: true, // This ensures the updated user is returned
+      }
+    );
 
-    const user = await UserModel.findOne({ _id: userID});
-
-    if(user){
-        await UserModel.findByIdAndUpdate({ _id: userID}, payload);
-        res.status(200).send({msg: "User Details has been successfully Updated"})
-    }else {
-        res.status(400).send({msg: "Something went wrong, Details not updated"})
+    if (updatedUser) {
+      res
+        .status(200)
+        .send({ msg: "User details have been successfully updated" });
+    } else {
+      res.status(400).send({ msg: "User not found or something went wrong" });
     }
-
-})
+  } catch (error) {
+    res.status(500).send({ msg: "Error occurred while updating user details" });
+  }
+});
 
 // Delete Route
-userRouter.patch("delete/:userID" , async (req, res) => {
-    const userID = req.params.userID;
-    console.log(userID, typeof(userID));
+userRouter.patch("delete/:userID", async (req, res) => {
+  const userID = req.params.userID;
+  console.log(userID, typeof userID);
 
-    const user = await UserModel.findOne({ _id: userID});
+  const user = await UserModel.findOne({ _id: userID });
 
-    if(user){
-        await UserModel.findByIdAndDelete(userID, (err) => console.log(err));
-        res.status(200).send({msg: "User Details has been successfully Deleted!"})
-    }else {
-        res.status(400).send({msg: "Something went wrong, Details not Delteted"})
-    }
-
-})
+  if (user) {
+    await UserModel.findByIdAndDelete(userID, (err) => console.log(err));
+    res
+      .status(200)
+      .send({ msg: "User Details has been successfully Deleted!" });
+  } else {
+    res.status(400).send({ msg: "Something went wrong, Details not Delteted" });
+  }
+});
 
 module.exports = {
   userRouter,
