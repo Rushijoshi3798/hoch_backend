@@ -19,19 +19,21 @@ userRouter.get("/", async (req, res) => {
   const { q } = req.query;
 
   if (q) {
-    try {
-      const users = await UserModel.find({
-        Fname: { $regex: q, $options: "i" },
-      });
+    const users = await UserModel.find({
+      Fname: { $regex: q, $options: 'i' }
+    });
+    if (users.length) {
       res.status(200).send(users);
+      //console.log(users, "users");
+      return;
+    }
 
-      if (!users.length) {
-        const user = await UserModel.find({
-          Lname: { $regex: q, $options: "i" },
-        });
-        res.status(200).send(user);
-      }
-    } catch (error) {
+    if (!users.length) {
+      const user = await UserModel.find({
+        Lname: { $regex: q, $options: 'i' }
+      });
+      res.status(200).send(user);
+    } else {
       console.log(error);
       res.status(404).send({ msg: "Not Able to Get UserData from Server" });
     }
